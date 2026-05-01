@@ -19,7 +19,7 @@ import {
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-import { CheckCircle2, Circle, Trash2, SquarePen } from "lucide-react";
+import { CheckCircle2, Circle, Trash2, SquarePen, CircleCheckBig, Undo2 } from "lucide-react";
 
 // types
 import type { Task } from "@/types/task"
@@ -102,7 +102,7 @@ export default function TaskItem({
                         size="sm"
                         onClick={() => onToggleComplete(task)}
                     >
-                        {isComplete ? "Undo" : "Complete"}
+                        {isComplete ? <Undo2 /> : <CircleCheckBig />}
                     </Button>
 
                     {/* Edit */}

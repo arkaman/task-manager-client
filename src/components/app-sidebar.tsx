@@ -102,6 +102,7 @@ export function AppSidebar({
             {
               title: "Priority",
               icon: <CalendarArrowUp />,
+              isActive: true,
               items: [
                 { title: "All", active: priority === "ALL", onClick: () => handlePriority("ALL") },
                 { title: "High", active: priority === "HIGH", onClick: () => handlePriority("HIGH") },
