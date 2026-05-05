@@ -24,6 +24,15 @@ export type Task = {
     dueDate?: string | null;
 };
 
+// PAGINATION RESPONSE
+export type PageResponse<T> = {
+    content: T[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+};
+
 // HELPERS
 const formatDate = (date?: Date | null): string | null => {
     return date ? date.toISOString().split("T")[0] : null;
@@ -32,11 +41,18 @@ const formatDate = (date?: Date | null): string | null => {
 // TASK API
 
 export const getTasks = async (params?: {
+    page?: number;
+    size?: number;
     status?: string;
     priority?: string;
     keyword?: string;
-}): Promise<Task[]> => {
+}): Promise<PageResponse<Task>> => {
+
     const query = new URLSearchParams();
+
+    // pagination (the part you forgot existed)
+    query.append("page", String(params?.page ?? 0));
+    query.append("size", String(params?.size ?? 10));
 
     if (params?.status && params.status !== "ALL") {
         query.append("status", params.status);
@@ -51,10 +67,12 @@ export const getTasks = async (params?: {
     }
 
     const qs = query.toString();
-    const url = qs ? `/api/v1/tasks?${qs}` : `/api/v1/tasks`;
+    const url = `/api/v1/tasks?${qs}`;
 
     const data = await http.get(url);
-    return data.content;
+
+    // STOP discarding metadata
+    return data;
 };
 
 export const createTask = async (task: TaskPayload): Promise<Task> => {

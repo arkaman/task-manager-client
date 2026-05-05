@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { AppSidebar } from "@/components/app-sidebar"
@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import AddTaskDialog from "@/components/add-task-dialog"
 import TaskItem from "@/components/task-item"
 import { InputInline } from "@/components/input-inline"
+import PaginationBlock from "@/components/pagination-block"
 
 import {
     getTasks,
@@ -61,6 +62,13 @@ export default function Dashboard() {
     const [keyword, setKeyword] = useState("")
     const [searchTrigger, setSearchTrigger] = useState(0)
 
+    const [page, setPage] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [totalElements, setTotalElements] = useState(0)
+
+    const requestIdRef = useRef(0)
+    const PAGE_SIZE = 10;
+
     // ERROR HANDLER
 
     const showError = (err: any, fallback: string) => {
@@ -104,17 +112,25 @@ export default function Dashboard() {
             return
         }
 
+        const reqId = ++requestIdRef.current
+
         const loadTasks = async () => {
             try {
                 setLoading(true)
 
                 const data = await getTasks({
+                    page,
+                    size: 10,
                     status: statusFilter,
                     priority: priorityFilter,
                     keyword: keyword.trim(),
                 })
 
-                setTasks(data)
+                if (reqId !== requestIdRef.current) return
+
+                setTasks(data.content)
+                setTotalPages(data.totalPages)
+                setTotalElements(data.totalElements)
                 setError(null)
             } catch (err: any) {
                 if (err?.message?.includes("Session expired")) {
@@ -124,12 +140,19 @@ export default function Dashboard() {
                     setError(err?.message || "Failed to load tasks")
                 }
             } finally {
-                setLoading(false)
+                if (reqId === requestIdRef.current) {
+                    setLoading(false)
+                }
             }
         }
 
         loadTasks()
-    }, [statusFilter, priorityFilter, searchTrigger, navigate])
+    }, [page, statusFilter, priorityFilter, searchTrigger, navigate])
+
+    // reset page when filters/search change
+    useEffect(() => {
+        setPage(0)
+    }, [statusFilter, priorityFilter, searchTrigger])
 
     // ACTIONS
 
@@ -144,6 +167,7 @@ export default function Dashboard() {
         try {
             await deleteTask(id)
             setTasks((prev) => prev.filter((t) => t.id !== id))
+            setTotalElements((prev) => prev - 1)
             toast.success("Task deleted", { id: t })
         } catch (err) {
             showError(err, "Failed to delete task")
@@ -151,6 +175,13 @@ export default function Dashboard() {
     }
 
     const handleSave = async (form: TaskForm) => {
+
+        setTotalElements((prev) => {
+            const newTotal = prev + 1
+            setTotalPages(Math.ceil(newTotal / PAGE_SIZE))
+            return newTotal
+        })
+        
         try {
             const payload = toApiTask(form)
 
@@ -165,7 +196,12 @@ export default function Dashboard() {
                 setEditingTask(null)
             } else {
                 const created = await createTask(payload)
-                setTasks((prev) => [created, ...prev])
+                
+                if (page === 0) {
+                    setTasks((prev) => [created, ...prev.slice(0, 9)])
+                }
+
+                setTotalElements((prev) => prev + 1)
 
                 toast.success("Task created")
             }
@@ -283,6 +319,16 @@ export default function Dashboard() {
                             />
                         ))
                     )}
+                </div>
+
+                <PaginationBlock
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
+
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                    Showing {tasks.length} of {totalElements} tasks
                 </div>
 
                 <AddTaskDialog
