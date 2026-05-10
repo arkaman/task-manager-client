@@ -10,6 +10,7 @@ import AddTaskDialog from "@/components/add-task-dialog"
 import TaskItem from "@/components/task-item"
 import { InputInline } from "@/components/input-inline"
 import PaginationBlock from "@/components/pagination-block"
+import TaskSkeleton from "@/components/task-skeleton"
 
 import {
     getTasks,
@@ -281,9 +282,11 @@ export default function Dashboard() {
                     )}
 
                     {loading ? (
-                        <p className="text-sm text-muted-foreground">
-                            Loading tasks...
-                        </p>
+                        <div className="space-y-4">
+                            {Array.from({ length: 10 }).map((_, i) => (
+                                <TaskSkeleton key={i} />
+                            ))}
+                        </div>
                     ) : tasks.length === 0 ? (
                         <Empty>
                             <EmptyHeader>
@@ -327,7 +330,7 @@ export default function Dashboard() {
                     onPageChange={setPage}
                 />
 
-                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                <div className="flex justify-end px-4 pb-4 text-sm text-muted-foreground">
                     Showing {tasks.length} of {totalElements} tasks
                 </div>
 
