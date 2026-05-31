@@ -258,7 +258,7 @@ export default function Dashboard() {
                         </Breadcrumb>
                     </div>
 
-                    <div className="flex-1 max-w-md mx-4">
+                    <div className="flex-1 max-w-md">
                         <InputInline
                             value={keyword}
                             onChange={setKeyword}
@@ -272,7 +272,10 @@ export default function Dashboard() {
                             setOpen(true)
                         }}
                     >
-                        <CirclePlus /> Add Task
+                        <CirclePlus />
+                        <div className=" hidden md:block">
+                            Add Task
+                        </div>
                     </Button>
                 </header>
 
