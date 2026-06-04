@@ -1,6 +1,7 @@
 import { SignupForm } from "@/components/signup-form";
 import { registerUser } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type SignupData = {
     username: string;
@@ -23,6 +24,8 @@ export default function SignupPage() {
             email: data.email,
             password: data.password,
         });
+
+        toast.success("Account created successfully");
 
         // flow control
         navigate("/login");
