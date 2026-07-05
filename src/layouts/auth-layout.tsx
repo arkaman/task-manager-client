@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import PixelBlast from "@/components/PixelBlast";
 
 export default function AuthLayout() {
     return (
@@ -11,12 +12,23 @@ export default function AuthLayout() {
                 </div>
             </div>
 
-            <div className="relative hidden bg-muted lg:block">
-                <img
-                    src="image.webp"
-                    alt="Login visual"
-                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-                />
+            <div className="relative hidden overflow-hidden bg-muted lg:block">
+                <div className="absolute inset-0">
+                    <PixelBlast
+                        variant="square"
+                        pixelSize={4}
+                        color="#1447e6"
+                        patternScale={2}
+                        patternDensity={1}
+                        enableRipples
+                        rippleSpeed={0.3}
+                        rippleThickness={0.1}
+                        rippleIntensityScale={1}
+                        speed={0.5}
+                        transparent = {false}
+                        edgeFade={0}
+                    />
+                </div>
             </div>
         </div>
     );
