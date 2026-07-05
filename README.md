@@ -24,6 +24,7 @@ Supports authentication, task CRUD operations, filtering, and search.
 * Vite
 * Tailwind CSS
 * [Shadcn UI](https://ui.shadcn.com/)
+* [React Bits](https://reactbits.dev/)
 * REST API integration
 
 ---
