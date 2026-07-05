@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AuthLayout from "./layouts/auth-layout";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
@@ -10,8 +11,10 @@ function App() {
     <BrowserRouter>
       <Toaster />
       <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
 
         <Route
           path="/"
